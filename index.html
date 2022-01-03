@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Codenames</h1>
+    <button id='btnCreate'>Create Game</button>
+    <br />
+    <input id='txtGameId' type='text' />
+    <button id='btnJoin'>Join Game</button>
+    <h2>Players in the room:</h2>
+    <div id='divPlayers'></div>
+    <h2>Cards:</h2>
+    <div id='divCards' style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div>
+
+    <script>
+        let clientId = null;
+        let gameId = null;
+        const btnCreate = document.getElementById('btnCreate');
+        const txtGameId = document.getElementById('txtGameId');
+        const btnJoin = document.getElementById('btnJoin');
+        const divPlayers = document.getElementById('divPlayers');
+        const divCards = document.getElementById('divCards');
+
+        // make requests to server
+        btnCreate.addEventListener('click', e => {
+            const payload = {
+                'method': 'create',
+                'clientId': clientId
+            };
+            ws.send(JSON.stringify(payload));
+        });
+
+        btnJoin.addEventListener('click', e => {
+            gameId = txtGameId.value
+            const payload = {
+                'method': 'join',
+                'clientId': clientId,
+                'gameId': gameId
+            };
+            ws.send(JSON.stringify(payload));
+        });
+
+
+        // handle responses from server
+        let ws = new WebSocket('ws://127.0.0.1:8080')
+        ws.onmessage = (message) => {
+            const response = JSON.parse(message.data);
+            
+            if (response.method === 'connect'){
+                clientId = response.clientId
+                console.log('clientId set to ' + clientId)
+            };
+
+            if (response.method === 'create'){
+                txtGameId.value = response.gameId
+                console.log('gameId loaded to text input ' + response.gameId)
+            };
+
+            if (response.method === 'join'){
+                // update players in the room
+                while (divPlayers.firstChild){
+                    divPlayers.removeChild(divPlayers.firstChild);
+                }
+                response.game.clients.forEach(c => {
+                    const div = document.createElement('div')
+                    div.style.width = '200px';
+                    div.style.background = 'green';
+                    div.style.marginBottom = '10px';
+                    div.textContent = c.clientId;
+                    divPlayers.appendChild(div)
+                })
+                console.log('game joined: ' + response.game);
+
+                // update cards
+                while (divCards.firstChild){
+                    divCards.removeChild(divCards.firstChild);
+                }
+                response.game.cards.forEach((c,i) => {
+                    const btn = document.createElement('button')
+                    btn.id = "card_" + i;
+                    btn.tag = i;
+                    btn.style.height = '150px';
+                    btn.style.width = '150px';
+                    btn.style.background = c.isClicked ? c.color : 'white';
+                    btn.textContent = c.word;
+                    btn.addEventListener('click', e => {
+                        btn.style.background = c.color;
+                        const payload = {
+                            'method': 'play',
+                            'gameId': gameId,
+                            'cardId': btn.tag
+                        }
+                        ws.send(JSON.stringify(payload))
+                    })
+                    divCards.appendChild(btn);
+                })
+            }
+
+            if (response.method === 'update'){
+                response.game.cards.forEach((c,i) => {
+                    const btn = document.getElementById('card_'+i);
+                    btn.style.background = c.isClicked ? c.color : 'white';
+                })
+            }
+        }
+
+        ws.onclose = () => {
+            console.log('closing!')
+            const payload = {
+                'method': 'close',
+                'clientId': clientId
+            }
+            ws.send(JSON.stringify(payload))
+        }
+    </script>
+</body>
+</html>
