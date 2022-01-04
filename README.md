@@ -9,7 +9,6 @@ $ node index.js
 
 ## TODO
 - [ ] remove game when all users disconnect
-- [ ] auto join game after create
 
 ---
 
@@ -18,3 +17,4 @@ $ node index.js
 - [x] require user to leave game before create/join a new game (weird blinking when create & join a game without leaving previous game)
 - [x] show/hide map
 - [x] shuffle cards without creating a new game
+- [x] auto join game after create

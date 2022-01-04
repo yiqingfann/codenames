@@ -168,7 +168,7 @@ function broadcastGame(){
         })
     }
 
-    setTimeout(broadcastGame, 1000);
+    setTimeout(broadcastGame, 500);
 }
 
 function initCards(){

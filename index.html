@@ -19,9 +19,9 @@
     <button id='btnLeave' style='visibility: hidden;'>Leave Game</button>
     <button id='btnShowHideMap' style='visibility: hidden;'>Show/Hide Map</button>
     <button id='btnRestart' style='visibility: hidden;'>Restart Game</button>
-    <h2>Players in the room:</h2>
+    <h2 id='h2Players' style='visibility: hidden;'>Players in the room:</h2>
     <div id='divPlayers'></div>
-    <h2>Cards:</h2>
+    <h2 id='h2Cards' style='visibility: hidden;'>Cards:</h2>
     <div id='divCards' style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div>
 
     <script>
@@ -39,6 +39,8 @@
         const btnRestart = document.getElementById('btnRestart');
         const divPlayers = document.getElementById('divPlayers');
         const divCards = document.getElementById('divCards');
+        const h2Players = document.getElementById('h2Players');
+        const h2Cards = document.getElementById('h2Cards');
 
         // make requests to server
         btnCreate.addEventListener('click', e => {
@@ -105,6 +107,7 @@
 
             if (response.method === 'create'){
                 txtGameId.value = response.gameId
+                btnJoin.click();
             };
 
             if (response.method === 'join'){
@@ -116,6 +119,9 @@
                 btnLeave.style.visibility = "visible";
                 btnShowHideMap.style.visibility = "visible";
                 btnRestart.style.visibility = "visible";
+                h2Players.style.visibility = "visible";
+                h2Cards.style.visibility = "visible";
+                // TODO: probably set bisivility depending on gameId
             };
 
             if (response.method === 'leave'){
@@ -134,6 +140,8 @@
                     btnLeave.style.visibility = "hidden";
                     btnShowHideMap.style.visibility = "hidden";
                     btnRestart.style.visibility = "hidden";
+                    h2Players.style.visibility = "hidden";
+                    h2Cards.style.visibility = "hidden";
                 }
             }
 
