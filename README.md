@@ -11,3 +11,9 @@ $ node index.js
 - [ ] detect user disconnect (remove client connection, remove game when all users disconnect)
 - [ ] show map
 - [ ] shuffle cards without creating a new game
+- [ ] auto join game after create
+- [ ] weird blinking when create & join a game without leaving previous game
+
+
+- [x] detect user closing tab
+- [ ] require user to leave game before create/join a new game

@@ -9,6 +9,9 @@
 
 <body>
     <h1>Codenames</h1>
+    <h2>Hello!</h2>
+    <h2 id="h2ClientId"></h2>
+    <h2 id="h2GameId"></h2>
     <button id='btnCreate'>Create Game</button>
     <br />
     <input id='txtGameId' type='text' />
@@ -21,6 +24,8 @@
     <script>
         let clientId = null;
         let gameId = null;
+        const h2ClientId = document.getElementById('h2ClientId');
+        const h2GameId = document.getElementById('h2GameId');
         const btnCreate = document.getElementById('btnCreate');
         const txtGameId = document.getElementById('txtGameId');
         const btnJoin = document.getElementById('btnJoin');
@@ -46,6 +51,14 @@
             ws.send(JSON.stringify(payload));
         });
 
+        window.addEventListener("beforeunload", () => {
+            const payload = {
+                'method': 'close',
+                'clientId': clientId,
+                'gameId': gameId
+            }
+            ws.send(JSON.stringify(payload))
+        });
 
         // handle responses from server
         let ws = new WebSocket('ws://127.0.0.1:8080')
@@ -54,15 +67,20 @@
             
             if (response.method === 'connect'){
                 clientId = response.clientId
-                console.log('clientId set to ' + clientId)
+                h2ClientId.innerText = "Your ClientId is " + clientId
             };
 
             if (response.method === 'create'){
                 txtGameId.value = response.gameId
-                console.log('gameId loaded to text input ' + response.gameId)
+                h2GameId.innerText = "Your GameId is " + response.gameId
             };
 
             if (response.method === 'join'){
+                txtGameId.value = response.gameId
+                h2GameId.innerText = "Your GameId is " + response.gameId
+            };
+
+            if (response.method === 'update'){
                 // update players in the room
                 while (divPlayers.firstChild){
                     divPlayers.removeChild(divPlayers.firstChild);
@@ -72,10 +90,9 @@
                     div.style.width = '200px';
                     div.style.background = 'green';
                     div.style.marginBottom = '10px';
-                    div.textContent = c.clientId;
+                    div.textContent = c;
                     divPlayers.appendChild(div)
                 })
-                console.log('game joined: ' + response.game);
 
                 // update cards
                 while (divCards.firstChild){
@@ -101,22 +118,6 @@
                     divCards.appendChild(btn);
                 })
             }
-
-            if (response.method === 'update'){
-                response.game.cards.forEach((c,i) => {
-                    const btn = document.getElementById('card_'+i);
-                    btn.style.background = c.isClicked ? c.color : 'white';
-                })
-            }
-        }
-
-        ws.onclose = () => {
-            console.log('closing!')
-            const payload = {
-                'method': 'close',
-                'clientId': clientId
-            }
-            ws.send(JSON.stringify(payload))
         }
     </script>
 </body>

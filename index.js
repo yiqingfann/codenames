@@ -19,11 +19,11 @@ app.get('/', (req,rsp) => rsp.sendFile(__dirname + '/index.html'))
 
 const clients = {};
 // clients = {
-//     clientID: {
-//         connection: ??
+//     <clientID>: {
+//         'connection': <obj>
 //     },
-//     clientID: {
-//         connection: ??
+//     <clientID>: {
+//         'connection': <obj>
 //     },
 //     ...
 // }
@@ -49,22 +49,13 @@ const games = {};
 // ---------------------- handle request ----------------------
 
 wsServer.on('request', (request) => {
-    // when a user send a request to connect, get tcp connection
+    // when a user send a request to connect
     const connection = request.accept(null, request.origin);
-    const clientId = guid();
-    clients[clientId] = {
-        'connection': connection
-    }
-    const payload = {
-        'method': 'connect',
-        'clientId': clientId
-    }
-    connection.send(JSON.stringify(payload))
 
+    // configure the connection behavior
     connection.on('open', () => {console.log('opened!')})
-
     connection.on('close', () => {console.log('closed!')})
-    
+    connection.on('disconnect', () => {console.log('disconnected!')})
     connection.on('message', (message) => {
         const request = JSON.parse(message.utf8Data)
         console.log(request)
@@ -82,6 +73,9 @@ wsServer.on('request', (request) => {
                 'gameId': gameId
             }
             connection.send(JSON.stringify(payload))
+
+            // start broadcasting
+            broadcastGame();
         }
 
         // when a user send a request to join game
@@ -90,29 +84,50 @@ wsServer.on('request', (request) => {
             const clientId = request.clientId
             const gameId = request.gameId;
             const game = games[gameId];
-            game.clients.push({
-                'clientId': clientId
-            });
-            // notify all game clients about the join
+            game.clients.push(clientId);
+            // notify join success
             const payload = {
                 'method': 'join',
-                'game': game
+                'gameId': gameId
             };
-            game.clients.forEach(c => {
-                clients[c.clientId].connection.send(JSON.stringify(payload));
-            })
-            // start broadcasting
-            broadcastGame();
+            clients[clientId].connection.send(JSON.stringify(payload));
         }
-
+        
+        // when user request to click a card
         if (request.method === 'play'){
             const gameId = request.gameId;
             const cardId = request.cardId;
             games[gameId].cards[cardId].isClicked = true;
         }
 
+        // when user request to close the game
+        if (request.method === 'close'){
+            console.log('detect client closing!')
+            // delete client from game and broadcast to game clients
+            const gameId = request.gameId;
+            const clientId = request.clientId;
+            // delete client from game if necessary
+            if (gameId !== null){
+                const index = games[gameId].clients.indexOf(clientId);
+                if (index !== -1){
+                    games[gameId].clients.splice(index, 1)
+                }
+            }
+            // delete client connection
+            delete clients[clientId];
+        }
     })
 
+    // save connection to database and notify user
+    const clientId = guid();
+    clients[clientId] = {
+        'connection': connection
+    }
+    const payload = {
+        'method': 'connect',
+        'clientId': clientId
+    }
+    connection.send(JSON.stringify(payload))
 
 })
 
@@ -126,7 +141,7 @@ function broadcastGame(){
             'game': game
         }
         game.clients.forEach(c => {
-            clients[c.clientId].connection.send(JSON.stringify(payload));
+            clients[c].connection.send(JSON.stringify(payload));
         })
     }
 
