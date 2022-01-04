@@ -100,7 +100,7 @@ wsServer.on('request', (request) => {
         if (request.method === 'play'){
             const gameId = request.gameId;
             const cardId = request.cardId;
-            games[gameId].cards[cardId].isClicked = true;
+            games[gameId].cards[cardId].isClicked = !games[gameId].cards[cardId].isClicked;
         }
 
         // when user request to leave game
