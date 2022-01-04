@@ -151,8 +151,9 @@
                             'red': 'lightcoral',
                             'blue': 'lightblue',
                             'yellow': 'lightyellow',
+                            'grey': 'lightgrey',
                         }
-                        btn.style.background = c.isClicked ? colorMap[c.color] : c.color;
+                        btn.style.background = c.isClicked ? c.color : colorMap[c.color];
                     } else {
                         btn.style.background = c.isClicked ? c.color : 'white';
                     }

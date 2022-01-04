@@ -166,37 +166,48 @@ function broadcastGame(){
 }
 
 function initCards(){
-    return [
-        {'word': '黄瓜', 'color': 'red', 'isClicked': false},
-        {'word': '牙刷', 'color': 'blue', 'isClicked': false},
-        {'word': '旗袍', 'color': 'red', 'isClicked': false},
-        {'word': '小明', 'color': 'red', 'isClicked': false},
-        {'word': '山楂', 'color': 'yellow', 'isClicked': false},
-        {'word': '瓶', 'color': 'yellow', 'isClicked': false},
-        {'word': '衣服', 'color': 'red', 'isClicked': false},
-        {'word': '厨房', 'color': 'blue', 'isClicked': false},
-        {'word': '北京', 'color': 'red', 'isClicked': false},
-        {'word': '目录', 'color': 'blue', 'isClicked': false},
-        {'word': '肥皂', 'color': 'yellow', 'isClicked': false},
-        {'word': '盘子', 'color': 'yellow', 'isClicked': false},
-        {'word': '橡皮泥', 'color': 'red', 'isClicked': false},
-        {'word': '兔子', 'color': 'red', 'isClicked': false},
-        {'word': '可乐', 'color': 'blue', 'isClicked': false},
-        {'word': '蓝天', 'color': 'blue', 'isClicked': false},
-        {'word': '隔壁', 'color': 'yellow', 'isClicked': false},
-        {'word': '海豚', 'color': 'red', 'isClicked': false},
-        {'word': '妹妹', 'color': 'blue', 'isClicked': false},
-        {'word': '口腔', 'color': 'yellow', 'isClicked': false},
-        {'word': '手枪', 'color': 'blue', 'isClicked': false},
-        {'word': '吐鲁番', 'color': 'grey', 'isClicked': false},
-        {'word': '秤', 'color': 'yellow', 'isClicked': false},
-        {'word': '薯片', 'color': 'blue', 'isClicked': false},
-        {'word': '仙', 'color': 'red', 'isClicked': false},
-    ];
+    const numCards = 25;
+    let words = ["黄瓜", "牙刷", "旗袍", "小明", "山楂", "瓶", "衣服", "厨房", "北京", "目录", "肥皂", "盘子", "橡皮泥", "兔子", "可乐", "蓝天", "隔壁", "海豚", "妹妹", "口腔", "手枪", "吐鲁番", "秤", "薯片", "仙", "天空", "泳池", "项链", "舟", "冬青", "孔雀", "礼品", "西藏", "地狱", "缝纫机", "诅咒", "菩提", "白骨精", "蚊子", "美白", "醉", "葫芦娃", "开心果", "呼噜", "火箭", "钾", "飞", "科学家", "壁咚", "实验", "把手", "馅饼", "甲壳虫", "脸", "杀马特", "黄金", "龙", "雷", "炸鸡", "帕金森", "水", "马桶", "黑夜", "香蕉", "拉斯维加斯", "奥特曼", "小怪兽", "动画片", "痤疮", "糖", "发电机", "版权", "三文鱼", "对号", "南美", "卧室", "吸尘器", "鸭子", "花生", "垃圾", "瑜伽", "情人节", "快递", "书包", "恐龙", "喇叭", "黑板", "暖壶", "灵魂", "扭曲", "冬瓜", "油条", "数字", "白色", "球", "蜂蜜", "蕾丝", "鼠标", "传单", "整容", "速度", "脚趾"];
+    let colors = [
+        "red", "red", "red", "red", "red", "red", "red", "red", "red",
+        "blue", "blue", "blue", "blue", "blue", "blue", "blue", "blue",
+        "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow",
+        "grey"
+    ]
+    shuffle(words);
+    shuffle(colors);
+
+    cards = [];
+    for (let i = 0; i<numCards; i++){
+        cards.push({
+            'word': words[i],
+            'color': colors[i],
+            'isClicked': false
+        })
+    }
+
+    return cards;
 }
 
 function S4() {return (((1+Math.random())*0x10000)|0).toString(16).substring(1);}
 const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
 
+// ref: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
 
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
 
