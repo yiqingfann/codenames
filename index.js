@@ -42,6 +42,7 @@ const games = {};
 //             {clientID: ??},
 //             ...
 //         ],
+//         'status': 'waiting' or 'started'
 //     },
 //     ...
 // }
@@ -65,8 +66,9 @@ wsServer.on('request', (request) => {
             const gameId = guid();
             games[gameId] = {
                 'cardNum': 25,
-                'cards': initCards(),
-                'clients': []
+                'cards': [],
+                'clients': [],
+                'status': 'waiting'
             }
             const payload = {
                 'method': 'create',
@@ -125,10 +127,11 @@ wsServer.on('request', (request) => {
             }
         }
 
-        // when user request to restart game
-        if (request.method === 'restart'){
+        // when user request to start game
+        if (request.method === 'start'){
             const gameId = request.gameId;
             games[gameId].cards = initCards();
+            games[gameId].status = 'started';
         }
 
         // when user request to close the game
@@ -164,7 +167,7 @@ wsServer.on('request', (request) => {
         'clientId': clientId
     }
     connection.send(JSON.stringify(payload))
-    broadcastOngoingGame();
+    broadcastWaitingGame();
 })
 
 
@@ -181,20 +184,27 @@ function broadcastGame(){
         })
     }
 
-    setTimeout(broadcastGame, 500);
+    setTimeout(broadcastGame, 1000);
 }
 
-function broadcastOngoingGame(){
-    // TODO: performance issue, only braodcast to clients not in game
+function broadcastWaitingGame(){
+    let gameIds = []
+    Object.entries(games).forEach(([gameId, game]) => {
+        if (game.status === 'waiting'){
+            gameIds.push(gameId);
+        }
+    })
+
     const payload = {
-        'method': 'ongoing',
-        'gameIds': Object.keys(games)
+        'method': 'waiting',
+        'gameIds': gameIds
     }
+    // TODO: performance issue, only braodcast to clients not in game
     Object.values(clients).forEach(v => {
         v.connection.send(JSON.stringify(payload));
     })
 
-    setTimeout(broadcastOngoingGame, 500);
+    setTimeout(broadcastWaitingGame, 1000);
 }
 
 function initCards(){

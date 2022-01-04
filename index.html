@@ -26,14 +26,14 @@
     </div>
 
     <div id='divOngoingGamesContainer' style="margin-top: 5px; margin-bottom: 5px;">
-        <h3 id='hOngoingGames'>Ongoing Games:</h3>
+        <h3 id='hOngoingGames'>Join a game here!</h3>
         <div id='divOngoingGames'></div>
     </div>
     
     <div id="divGameButtonContainer" style="display:none; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
         <button id='btnLeave' class="btn btn-danger" style='margin-left: 5px; margin-right: 5px;'>Leave Game</button>
         <button id='btnShowHideMap' class="btn btn-warning" style='margin-left: 5px; margin-right: 5px;'>Show/Hide Map</button>
-        <button id='btnRestart' class="btn btn-primary" style='margin-left: 5px; margin-right: 5px;'>Restart Game</button>
+        <button id='btnStart' class="btn btn-primary" style='margin-left: 5px; margin-right: 5px;'>Start Game</button>
     </div>
 
     <div id='divGameInfoContainer' style="display:none; margin-top: 5px; margin-bottom: 5px;">
@@ -55,11 +55,12 @@
         const btnJoin = document.getElementById('btnJoin');
         const btnLeave = document.getElementById('btnLeave');
         const btnShowHideMap = document.getElementById('btnShowHideMap');
-        const btnRestart = document.getElementById('btnRestart');
+        const btnStart = document.getElementById('btnStart');
         const divPlayers = document.getElementById('divPlayers');
         const divCards = document.getElementById('divCards');
         const hPlayers = document.getElementById('hPlayers');
         const hCards = document.getElementById('hCards');
+        const hOngoingGames = document.getElementById('hOngoingGames');
         const divOngoingGames = document.getElementById('divOngoingGames');
         const divJoinCreateContainer = document.getElementById('divJoinCreateContainer');
         const divOngoingGamesContainer = document.getElementById('divOngoingGamesContainer');
@@ -95,11 +96,11 @@
             ws.send(JSON.stringify(payload));
         });
 
-        btnRestart.addEventListener('click', e => {
+        btnStart.addEventListener('click', e => {
             showMap = false;
             gameId = txtGameId.value
             const payload = {
-                'method': 'restart',
+                'method': 'start',
                 'clientId': clientId,
                 'gameId': gameId
             };
@@ -120,8 +121,8 @@
         });
 
         // handle responses from server
-        // let ws = new WebSocket('ws://127.0.0.1:8080')
-        let ws = new WebSocket('ws://3.142.48.123:8080')
+        let ws = new WebSocket('ws://127.0.0.1:8080')
+        // let ws = new WebSocket('ws://3.142.48.123:8080')
         ws.onmessage = (message) => {
             const response = JSON.parse(message.data);
             
@@ -130,8 +131,8 @@
                 hClientId.innerText = "Your ClientId is " + clientId
             };
 
-            if (response.method === 'ongoing'){
-                console.log("ongoing!")
+            if (response.method === 'waiting'){
+                hOngoingGames.innerText = "There are " + response.gameIds.length + " games waiting for join!";
                 while (divOngoingGames.firstChild){
                     divOngoingGames.removeChild(divOngoingGames.firstChild);
                 }
