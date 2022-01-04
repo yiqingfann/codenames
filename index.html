@@ -18,6 +18,7 @@
     <br />
     <button id='btnLeave' style='visibility: hidden;'>Leave Game</button>
     <button id='btnShowHideMap' style='visibility: hidden;'>Show/Hide Map</button>
+    <button id='btnRestart' style='visibility: hidden;'>Restart Game</button>
     <h2>Players in the room:</h2>
     <div id='divPlayers'></div>
     <h2>Cards:</h2>
@@ -35,6 +36,7 @@
         const btnJoin = document.getElementById('btnJoin');
         const btnLeave = document.getElementById('btnLeave');
         const btnShowHideMap = document.getElementById('btnShowHideMap');
+        const btnRestart = document.getElementById('btnRestart');
         const divPlayers = document.getElementById('divPlayers');
         const divCards = document.getElementById('divCards');
 
@@ -61,6 +63,17 @@
             gameId = txtGameId.value
             const payload = {
                 'method': 'leave',
+                'clientId': clientId,
+                'gameId': gameId
+            };
+            ws.send(JSON.stringify(payload));
+        });
+
+        btnRestart.addEventListener('click', e => {
+            showMap = false;
+            gameId = txtGameId.value
+            const payload = {
+                'method': 'restart',
                 'clientId': clientId,
                 'gameId': gameId
             };
@@ -102,6 +115,7 @@
                 btnJoin.style.visibility = "hidden";
                 btnLeave.style.visibility = "visible";
                 btnShowHideMap.style.visibility = "visible";
+                btnRestart.style.visibility = "visible";
             };
 
             if (response.method === 'leave'){
@@ -119,6 +133,7 @@
                     btnJoin.style.visibility = "visible";
                     btnLeave.style.visibility = "hidden";
                     btnShowHideMap.style.visibility = "hidden";
+                    btnRestart.style.visibility = "hidden";
                 }
             }
 

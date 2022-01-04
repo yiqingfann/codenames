@@ -117,6 +117,12 @@ wsServer.on('request', (request) => {
             clients[clientId].connection.send(JSON.stringify(payload));
         }
 
+        // when user request to restart game
+        if (request.method === 'restart'){
+            const gameId = request.gameId;
+            games[gameId].cards = initCards();
+        }
+
         // when user request to close the game
         if (request.method === 'close'){
             console.log('detect client closing!')
