@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<div style="padding: 1%; padding-left: 30%;">
+<div style="padding: 1%; padding-left: 20%;">
     <h1>Welcome to Codenames!</h1>
     <h3 id="hClientId">You haven't connected to server</h2>
     <h3 id="hGameId">You haven't joined a game</h2>
@@ -108,8 +108,8 @@
         });
 
         // handle responses from server
-        // let ws = new WebSocket('ws://127.0.0.1:8080')
-        let ws = new WebSocket('ws://3.142.48.123:8080')
+        let ws = new WebSocket('ws://127.0.0.1:8080')
+        // let ws = new WebSocket('ws://3.142.48.123:8080')
         ws.onmessage = (message) => {
             const response = JSON.parse(message.data);
             
@@ -140,6 +140,7 @@
             if (response.method === 'leave'){
                 if (response.status === 'success'){
                     gameId = null;
+                    showMap = false;
                     hGameId.innerText = "You haven't joined a game";
                     while (divPlayers.firstChild){
                         divPlayers.removeChild(divPlayers.firstChild);
