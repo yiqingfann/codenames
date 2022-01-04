@@ -86,9 +86,6 @@ wsServer.on('request', (request) => {
 
             if (Object.hasOwn(games, gameId)){
                 const game = games[gameId];
-                
-                console.log("---")
-                console.log(game)
                 game.clients.push(clientId);
                 // notify join success
                 const payload = {
