@@ -83,14 +83,20 @@ wsServer.on('request', (request) => {
             // update game
             const clientId = request.clientId
             const gameId = request.gameId;
-            const game = games[gameId];
-            game.clients.push(clientId);
-            // notify join success
-            const payload = {
-                'method': 'join',
-                'gameId': gameId
-            };
-            clients[clientId].connection.send(JSON.stringify(payload));
+
+            if (Object.hasOwn(games, gameId)){
+                const game = games[gameId];
+                
+                console.log("---")
+                console.log(game)
+                game.clients.push(clientId);
+                // notify join success
+                const payload = {
+                    'method': 'join',
+                    'gameId': gameId
+                };
+                clients[clientId].connection.send(JSON.stringify(payload));
+            }
         }
         
         // when user request to click a card
