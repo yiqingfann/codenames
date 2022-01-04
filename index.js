@@ -118,6 +118,11 @@ wsServer.on('request', (request) => {
                 'status': 'success'
             };
             clients[clientId].connection.send(JSON.stringify(payload));
+
+            // if no clinet in game, delete game
+            if (games[gameId].clients.length === 0){
+                delete games[gameId];
+            }
         }
 
         // when user request to restart game
@@ -138,7 +143,12 @@ wsServer.on('request', (request) => {
                 if (index !== -1){
                     games[gameId].clients.splice(index, 1)
                 }
+                // if no clinet in game, delete game
+                if (games[gameId].clients.length === 0){
+                    delete games[gameId];
+                }
             }
+
             // delete client connection
             delete clients[clientId];
         }
@@ -154,7 +164,7 @@ wsServer.on('request', (request) => {
         'clientId': clientId
     }
     connection.send(JSON.stringify(payload))
-
+    broadcastOngoingGame();
 })
 
 
@@ -172,6 +182,19 @@ function broadcastGame(){
     }
 
     setTimeout(broadcastGame, 500);
+}
+
+function broadcastOngoingGame(){
+    // TODO: performance issue, only braodcast to clients not in game
+    const payload = {
+        'method': 'ongoing',
+        'gameIds': Object.keys(games)
+    }
+    Object.values(clients).forEach(v => {
+        v.connection.send(JSON.stringify(payload));
+    })
+
+    setTimeout(broadcastOngoingGame, 500);
 }
 
 function initCards(){

@@ -24,6 +24,11 @@
         <br />
         <button id='btnCreate' class="btn btn-primary">Create Game</button>
     </div>
+
+    <div id='divOngoingGamesContainer'>
+        <h3 id='hOngoingGames'>Ongoing Games:</h3>
+        <div id='divOngoingGames'></div>
+    </div>
     
     <div style="display:flex; height:100%; width:100%; margin-bottom: 10px;">
         <button id='btnLeave' class="btn btn-danger" style='visibility: hidden; margin-left: 5px; margin-right: 5px;'>Leave Game</button>
@@ -53,6 +58,8 @@
         const divCards = document.getElementById('divCards');
         const hPlayers = document.getElementById('hPlayers');
         const hCards = document.getElementById('hCards');
+        const divOngoingGames = document.getElementById('divOngoingGames');
+        const divOngoingGamesContainer = document.getElementById('divOngoingGamesContainer');
 
         // make requests to server
         btnCreate.addEventListener('click', e => {
@@ -118,6 +125,25 @@
                 hClientId.innerText = "Your ClientId is " + clientId
             };
 
+            if (response.method === 'ongoing'){
+                console.log("ongoing!")
+                while (divOngoingGames.firstChild){
+                    divOngoingGames.removeChild(divOngoingGames.firstChild);
+                }
+                gameIds = response.gameIds
+                gameIds.forEach(id => {
+                    const btn = document.createElement('button');
+                    btn.setAttribute('class', 'btn btn-info btn-lg btn-block');
+                    btn.textContent = id;
+                    btn.style.marginBottom = '10px';
+                    btn.addEventListener('click', e => {
+                        txtGameId.value = id;
+                        btnJoin.click();
+                    })
+                    divOngoingGames.appendChild(btn)
+                })
+            }
+
             if (response.method === 'create'){
                 txtGameId.value = response.gameId
                 btnJoin.click();
@@ -134,6 +160,7 @@
                 btnRestart.style.visibility = "visible";
                 hPlayers.style.visibility = "visible";
                 hCards.style.visibility = "visible";
+                divOngoingGamesContainer.style.visibility = "hidden";
                 // TODO: probably set bisivility depending on gameId
             };
 
@@ -156,6 +183,7 @@
                     btnRestart.style.visibility = "hidden";
                     hPlayers.style.visibility = "hidden";
                     hCards.style.visibility = "hidden";
+                    divOngoingGamesContainer.style.visibility = "visible";
                 }
             }
 

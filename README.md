@@ -9,6 +9,8 @@ $ node index.js
 
 ## TODO
 - [ ] remove game when all users disconnect
+- [ ] show ongoing games
+- [ ] undo click card
 
 ---
 
