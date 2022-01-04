@@ -100,6 +100,23 @@ wsServer.on('request', (request) => {
             games[gameId].cards[cardId].isClicked = true;
         }
 
+        // when user request to leave game
+        if (request.method === 'leave'){
+            const clientId = request.clientId;
+            const gameId = request.gameId;
+            const index = games[gameId].clients.indexOf(clientId);
+            if (index !== -1){
+                games[gameId].clients.splice(index, 1)
+            }
+
+            // notify leave success
+            const payload = {
+                'method': 'leave',
+                'status': 'success'
+            };
+            clients[clientId].connection.send(JSON.stringify(payload));
+        }
+
         // when user request to close the game
         if (request.method === 'close'){
             console.log('detect client closing!')

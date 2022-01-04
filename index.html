@@ -8,14 +8,15 @@
 </head>
 
 <body>
-    <h1>Codenames</h1>
-    <h2>Hello!</h2>
-    <h2 id="h2ClientId"></h2>
-    <h2 id="h2GameId"></h2>
+    <h1>Welcome to Codenames!</h1>
+    <h2 id="h2ClientId">You haven't connected to server</h2>
+    <h2 id="h2GameId">You haven't joined a game</h2>
     <button id='btnCreate'>Create Game</button>
     <br />
     <input id='txtGameId' type='text' />
     <button id='btnJoin'>Join Game</button>
+    <br />
+    <button id='btnLeave' style='visibility: hidden;'>Leave Game</button>
     <h2>Players in the room:</h2>
     <div id='divPlayers'></div>
     <h2>Cards:</h2>
@@ -29,6 +30,7 @@
         const btnCreate = document.getElementById('btnCreate');
         const txtGameId = document.getElementById('txtGameId');
         const btnJoin = document.getElementById('btnJoin');
+        const btnLeave = document.getElementById('btnLeave');
         const divPlayers = document.getElementById('divPlayers');
         const divCards = document.getElementById('divCards');
 
@@ -45,6 +47,16 @@
             gameId = txtGameId.value
             const payload = {
                 'method': 'join',
+                'clientId': clientId,
+                'gameId': gameId
+            };
+            ws.send(JSON.stringify(payload));
+        });
+
+        btnLeave.addEventListener('click', e => {
+            gameId = txtGameId.value
+            const payload = {
+                'method': 'leave',
                 'clientId': clientId,
                 'gameId': gameId
             };
@@ -72,13 +84,33 @@
 
             if (response.method === 'create'){
                 txtGameId.value = response.gameId
-                h2GameId.innerText = "Your GameId is " + response.gameId
             };
 
             if (response.method === 'join'){
-                txtGameId.value = response.gameId
-                h2GameId.innerText = "Your GameId is " + response.gameId
+                txtGameId.value = response.gameId;
+                h2GameId.innerText = "Your GameId is " + response.gameId;
+                btnCreate.style.visibility = "hidden";
+                txtGameId.style.visibility = "hidden";
+                btnJoin.style.visibility = "hidden";
+                btnLeave.style.visibility = "visible";
             };
+
+            if (response.method === 'leave'){
+                if (response.status === 'success'){
+                    gameId = null;
+                    h2GameId.innerText = "You haven't joined a game";
+                    while (divPlayers.firstChild){
+                        divPlayers.removeChild(divPlayers.firstChild);
+                    }
+                    while (divCards.firstChild){
+                        divCards.removeChild(divCards.firstChild);
+                    }
+                    btnCreate.style.visibility = "visible";
+                    txtGameId.style.visibility = "visible";
+                    btnJoin.style.visibility = "visible";
+                    btnLeave.style.visibility = "hidden";
+                }
+            }
 
             if (response.method === 'update'){
                 // update players in the room
