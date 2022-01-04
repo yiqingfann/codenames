@@ -108,7 +108,8 @@
         });
 
         // handle responses from server
-        let ws = new WebSocket('ws://127.0.0.1:8080')
+        // let ws = new WebSocket('ws://127.0.0.1:8080')
+        let ws = new WebSocket('ws://3.142.48.123:8080')
         ws.onmessage = (message) => {
             const response = JSON.parse(message.data);
             
