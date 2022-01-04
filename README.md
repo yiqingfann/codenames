@@ -9,8 +9,8 @@ $ node index.js
 
 ## TODO
 - [ ] remove game when all users disconnect
-- [ ] show ongoing games
-- [ ] undo click card
+- [ ] games waiting for join / started (cannot be joined)
+
 
 ---
 
@@ -20,3 +20,5 @@ $ node index.js
 - [x] show/hide map
 - [x] shuffle cards without creating a new game
 - [x] auto join game after create
+- [x] show ongoing games
+- [x] undo click card

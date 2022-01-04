@@ -17,7 +17,7 @@
     <h3 id="hGameId">You haven't joined a game</h2>
     
     <!-- <div style="display:flex; height:100%; width:100%; justify-content:center; align-items:center;"> -->
-    <div style="display:flex; height:100%; width:100%; margin-top: 20px;">
+    <div id="divJoinCreateContainer" style="display:flex; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
         <input id='txtGameId' type='text' placeholder="paste GameId here"/>
         <br />
         <button id='btnJoin' class="btn btn-success" style="margin-left: 5px; margin-right: 5px;">Join Game</button>
@@ -25,21 +25,23 @@
         <button id='btnCreate' class="btn btn-primary">Create Game</button>
     </div>
 
-    <div id='divOngoingGamesContainer'>
+    <div id='divOngoingGamesContainer' style="margin-top: 5px; margin-bottom: 5px;">
         <h3 id='hOngoingGames'>Ongoing Games:</h3>
         <div id='divOngoingGames'></div>
     </div>
     
-    <div style="display:flex; height:100%; width:100%; margin-bottom: 10px;">
-        <button id='btnLeave' class="btn btn-danger" style='visibility: hidden; margin-left: 5px; margin-right: 5px;'>Leave Game</button>
-        <button id='btnShowHideMap' class="btn btn-warning" style='visibility: hidden; margin-left: 5px; margin-right: 5px;'>Show/Hide Map</button>
-        <button id='btnRestart' class="btn btn-primary" style='visibility: hidden; margin-left: 5px; margin-right: 5px;'>Restart Game</button>
+    <div id="divGameButtonContainer" style="display:none; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
+        <button id='btnLeave' class="btn btn-danger" style='margin-left: 5px; margin-right: 5px;'>Leave Game</button>
+        <button id='btnShowHideMap' class="btn btn-warning" style='margin-left: 5px; margin-right: 5px;'>Show/Hide Map</button>
+        <button id='btnRestart' class="btn btn-primary" style='margin-left: 5px; margin-right: 5px;'>Restart Game</button>
     </div>
 
-    <h3 id='hPlayers' style='visibility: hidden;'>Players in the room:</h2>
-    <div id='divPlayers' style="display:flex; height:100%; width:100%;"></div>
-    <h3 id='hCards' style='visibility: hidden;'>Cards:</h2>
-    <div id='divCards' style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div>
+    <div id='divGameInfoContainer' style="display:none; margin-top: 5px; margin-bottom: 5px;">
+        <h3 id='hPlayers'>Players in the room:</h2>
+        <div id='divPlayers' style="display:flex; height:100%; width:100%;"></div>
+        <h3 id='hCards'>Cards:</h2>
+        <div id='divCards' style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div>
+    </div>
 </div>
     <script>
         let clientId = null;
@@ -59,8 +61,11 @@
         const hPlayers = document.getElementById('hPlayers');
         const hCards = document.getElementById('hCards');
         const divOngoingGames = document.getElementById('divOngoingGames');
+        const divJoinCreateContainer = document.getElementById('divJoinCreateContainer');
         const divOngoingGamesContainer = document.getElementById('divOngoingGamesContainer');
-
+        const divGameButtonContainer = document.getElementById('divGameButtonContainer');
+        const divGameInfoContainer = document.getElementById('divGameInfoContainer');
+        
         // make requests to server
         btnCreate.addEventListener('click', e => {
             const payload = {
@@ -115,8 +120,8 @@
         });
 
         // handle responses from server
-        let ws = new WebSocket('ws://127.0.0.1:8080')
-        // let ws = new WebSocket('ws://3.142.48.123:8080')
+        // let ws = new WebSocket('ws://127.0.0.1:8080')
+        let ws = new WebSocket('ws://3.142.48.123:8080')
         ws.onmessage = (message) => {
             const response = JSON.parse(message.data);
             
@@ -152,16 +157,11 @@
             if (response.method === 'join'){
                 txtGameId.value = response.gameId;
                 hGameId.innerText = "Your GameId is " + response.gameId;
-                btnCreate.style.visibility = "hidden";
-                txtGameId.style.visibility = "hidden";
-                btnJoin.style.visibility = "hidden";
-                btnLeave.style.visibility = "visible";
-                btnShowHideMap.style.visibility = "visible";
-                btnRestart.style.visibility = "visible";
-                hPlayers.style.visibility = "visible";
-                hCards.style.visibility = "visible";
-                divOngoingGamesContainer.style.visibility = "hidden";
                 // TODO: probably set bisivility depending on gameId
+                divJoinCreateContainer.style.display = 'none';
+                divOngoingGamesContainer.style.display = "none";
+                divGameButtonContainer.style.display = "flex";
+                divGameInfoContainer.style.display = "block";
             };
 
             if (response.method === 'leave'){
@@ -175,15 +175,10 @@
                     while (divCards.firstChild){
                         divCards.removeChild(divCards.firstChild);
                     }
-                    btnCreate.style.visibility = "visible";
-                    txtGameId.style.visibility = "visible";
-                    btnJoin.style.visibility = "visible";
-                    btnLeave.style.visibility = "hidden";
-                    btnShowHideMap.style.visibility = "hidden";
-                    btnRestart.style.visibility = "hidden";
-                    hPlayers.style.visibility = "hidden";
-                    hCards.style.visibility = "hidden";
-                    divOngoingGamesContainer.style.visibility = "visible";
+                    divJoinCreateContainer.style.display = 'flex';
+                    divOngoingGamesContainer.style.display = "block";
+                    divGameButtonContainer.style.display = "none";
+                    divGameInfoContainer.style.display = "none";
                 }
             }
 
