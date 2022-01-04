@@ -13,16 +13,21 @@
 <body>
 <div style="padding: 1%; padding-left: 20%;">
     <h1>Welcome to Codenames!</h1>
-    <h3 id="hClientId">You haven't connected to server</h2>
-    <h3 id="hGameId">You haven't joined a game</h2>
+    <h3 id="hClientId">Nickname shown here</h2>
+    <h3 id="hGameId" style="display: none;">GameId shown here</h2>
     
     <!-- <div style="display:flex; height:100%; width:100%; justify-content:center; align-items:center;"> -->
-    <div id="divJoinCreateContainer" style="display:flex; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
-        <input id='txtGameId' type='text' placeholder="paste GameId here"/>
-        <br />
+    <div id="divJoinCreateContainer" style="display:block; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
+        <div style="display:flex; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
+            <input id='txtNickname' type='text' placeholder="nickname in game"/>
+            <button id='btnUpdateNickname' class="btn btn-success" style="margin-left: 5px; margin-right: 5px;">Update Nickname</button>
+        </div>
+
+        <div style="display:flex; height:100%; width:100%; margin-top: 5px; margin-bottom: 5px;">
+        <input id='txtGameId' type='text' placeholder="paste gameid here"/>
         <button id='btnJoin' class="btn btn-success" style="margin-left: 5px; margin-right: 5px;">Join Game</button>
-        <br />
         <button id='btnCreate' class="btn btn-primary">Create Game</button>
+        </div>
     </div>
 
     <div id='divOngoingGamesContainer' style="margin-top: 5px; margin-bottom: 5px;">
@@ -66,6 +71,8 @@
         const divOngoingGamesContainer = document.getElementById('divOngoingGamesContainer');
         const divGameButtonContainer = document.getElementById('divGameButtonContainer');
         const divGameInfoContainer = document.getElementById('divGameInfoContainer');
+        const btnUpdateNickname = document.getElementById('btnUpdateNickname');
+        const txtNickname = document.getElementById('txtNickname');
         
         // make requests to server
         btnCreate.addEventListener('click', e => {
@@ -82,6 +89,16 @@
                 'method': 'join',
                 'clientId': clientId,
                 'gameId': gameId
+            };
+            ws.send(JSON.stringify(payload));
+        });
+
+        btnUpdateNickname.addEventListener('click', e => {
+            nickname = txtNickname.value
+            const payload = {
+                'method': 'update nickname',
+                'clientId': clientId,
+                'nickname': nickname
             };
             ws.send(JSON.stringify(payload));
         });
@@ -128,7 +145,7 @@
             
             if (response.method === 'connect'){
                 clientId = response.clientId
-                hClientId.innerText = "Your ClientId is " + clientId
+                hClientId.innerText = "Hello, " + clientId
             };
 
             if (response.method === 'waiting'){
@@ -157,13 +174,22 @@
 
             if (response.method === 'join'){
                 txtGameId.value = response.gameId;
-                hGameId.innerText = "Your GameId is " + response.gameId;
+                hGameId.innerText = "GameId: " + response.gameId;
                 // TODO: probably set bisivility depending on gameId
+                hClientId.style.display = 'none';
+                hGameId.style.display = 'block';
                 divJoinCreateContainer.style.display = 'none';
                 divOngoingGamesContainer.style.display = "none";
                 divGameButtonContainer.style.display = "flex";
                 divGameInfoContainer.style.display = "block";
             };
+
+            if (response.method === 'update nickname'){
+                if (response.status === 'success'){
+                    hClientId.innerText = "Hello, " + response.nickname;
+                    txtNickname.value = "";
+                }
+            }
 
             if (response.method === 'leave'){
                 if (response.status === 'success'){
@@ -176,7 +202,9 @@
                     while (divCards.firstChild){
                         divCards.removeChild(divCards.firstChild);
                     }
-                    divJoinCreateContainer.style.display = 'flex';
+                    hClientId.style.display = 'block';
+                    hGameId.style.display = 'none';
+                    divJoinCreateContainer.style.display = 'block';
                     divOngoingGamesContainer.style.display = "block";
                     divGameButtonContainer.style.display = "none";
                     divGameInfoContainer.style.display = "none";
@@ -195,7 +223,7 @@
                     div.style.marginBottom = '10px';
                     div.style.marginLeft = '5px';
                     div.style.margigRight = '5px';
-                    div.textContent = c;
+                    div.textContent = c.nickname;
                     divPlayers.appendChild(div)
                 })
 

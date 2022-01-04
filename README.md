@@ -8,7 +8,7 @@ $ node index.js
 ```
 
 ## TODO
-- [ ] room name and player name
+- [ ] room name and 
 - [ ] user sign up
 - [ ] delete game
 - [ ] decrease broadcast frequency
@@ -39,3 +39,4 @@ $ node index.js
     when i've joined a game
     when i click start game
     the game should be in started status and hide on index
+- [x] player nickname

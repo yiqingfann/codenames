@@ -20,10 +20,12 @@ app.get('/', (req,rsp) => rsp.sendFile(__dirname + '/index.html'))
 const clients = {};
 // clients = {
 //     <clientID>: {
-//         'connection': <obj>
+//         'connection': <obj>,
+//         'nickname': <string>
 //     },
 //     <clientID>: {
 //         'connection': <obj>
+//         'nickname': <string>
 //     },
 //     ...
 // }
@@ -38,8 +40,8 @@ const games = {};
 //             ...
 //         ],
 //         clients: [
-//             {clientID: ??},
-//             {clientID: ??},
+//             {'clientID': ??, 'nickname': ??},
+//             {'clientID': ??, 'nickname': ??},
 //             ...
 //         ],
 //         'status': 'waiting' or 'started'
@@ -88,7 +90,10 @@ wsServer.on('request', (request) => {
 
             if (Object.hasOwn(games, gameId)){
                 const game = games[gameId];
-                game.clients.push(clientId);
+                game.clients.push({
+                    'clientId': clientId,
+                    'nickname': clients[clientId].nickname
+                });
                 // notify join success
                 const payload = {
                     'method': 'join',
@@ -96,6 +101,19 @@ wsServer.on('request', (request) => {
                 };
                 clients[clientId].connection.send(JSON.stringify(payload));
             }
+        }
+
+        if (request.method === 'update nickname'){
+            const clientId = request.clientId;
+            const nickname = request.nickname;
+            clients[clientId].nickname = nickname;
+
+            const payload = {
+                'method': 'update nickname',
+                'status': 'success',
+                'nickname': nickname
+            }
+            clients[clientId].connection.send(JSON.stringify(payload));
         }
         
         // when user request to click a card
@@ -109,10 +127,15 @@ wsServer.on('request', (request) => {
         if (request.method === 'leave'){
             const clientId = request.clientId;
             const gameId = request.gameId;
-            const index = games[gameId].clients.indexOf(clientId);
-            if (index !== -1){
-                games[gameId].clients.splice(index, 1)
-            }
+
+            games[gameId].clients.every((c,i) => {
+                if (c.clientId === clientId){
+                    games[gameId].clients.splice(i, 1);
+                    return false;
+                } else {
+                    return true;
+                }
+            })
 
             // notify leave success
             const payload = {
@@ -142,10 +165,14 @@ wsServer.on('request', (request) => {
             const clientId = request.clientId;
             // delete client from game if necessary
             if (gameId !== null){
-                const index = games[gameId].clients.indexOf(clientId);
-                if (index !== -1){
-                    games[gameId].clients.splice(index, 1)
-                }
+                games[gameId].clients.every((c,i) => {
+                    if (c.clientId === clientId){
+                        games[gameId].clients.splice(i, 1);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                })
                 // if no clinet in game, delete game
                 if (games[gameId].clients.length === 0){
                     delete games[gameId];
@@ -160,7 +187,8 @@ wsServer.on('request', (request) => {
     // save connection to database and notify user
     const clientId = guid();
     clients[clientId] = {
-        'connection': connection
+        'connection': connection,
+        'nickname': clientId,
     }
     const payload = {
         'method': 'connect',
@@ -180,10 +208,9 @@ function broadcastGame(){
             'game': game
         }
         game.clients.forEach(c => {
-            clients[c].connection.send(JSON.stringify(payload));
+            clients[c.clientId].connection.send(JSON.stringify(payload));
         })
     }
-
     setTimeout(broadcastGame, 1000);
 }
 
