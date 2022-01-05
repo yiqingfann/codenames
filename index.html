@@ -30,7 +30,8 @@
         </div>
     </div>
 
-    <div id='divOngoingGamesContainer' style="margin-top: 5px; margin-bottom: 5px;">
+    <div id='divOngoingGamesContainer' style="display: block; margin-top: 5px; margin-bottom: 5px;">
+        <h3 id='hNumOnlineClients'>NumOnlineClients</h3>
         <h3 id='hOngoingGames'>Join a game here!</h3>
         <div id='divOngoingGames'></div>
     </div>
@@ -73,6 +74,7 @@
         const divGameInfoContainer = document.getElementById('divGameInfoContainer');
         const btnUpdateNickname = document.getElementById('btnUpdateNickname');
         const txtNickname = document.getElementById('txtNickname');
+        const hNumOnlineClients = document.getElementById('hNumOnlineClients');
         
         // make requests to server
         btnCreate.addEventListener('click', e => {
@@ -149,6 +151,7 @@
             };
 
             if (response.method === 'waiting'){
+                hNumOnlineClients.innerText = "There are " + response.numOnlineClients + " palyers online!";
                 hOngoingGames.innerText = "There are " + response.gameIds.length + " games waiting for join!";
                 while (divOngoingGames.firstChild){
                     divOngoingGames.removeChild(divOngoingGames.firstChild);

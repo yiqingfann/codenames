@@ -224,7 +224,8 @@ function broadcastWaitingGame(){
 
     const payload = {
         'method': 'waiting',
-        'gameIds': gameIds
+        'numOnlineClients': Object.keys(clients).length,
+        'gameIds': gameIds,
     }
     // TODO: performance issue, only braodcast to clients not in game
     Object.values(clients).forEach(v => {
