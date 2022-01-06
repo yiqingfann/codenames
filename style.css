@@ -8,6 +8,7 @@
         /* grid-template-columns: 20% 20% 20% 20% 20%; */
         grid-template-columns: 150px 150px 150px 150px 150px;
         justify-content: center;
+        font-size: large;
     }
 }
 
@@ -17,6 +18,7 @@
         grid-template-columns: 20% 20% 20% 20% 20%;
         /* grid-template-columns: 150px 150px 150px 150px 150px; */
         justify-content: center;
+        font-size: small;
     }
 }
 
