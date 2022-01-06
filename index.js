@@ -79,7 +79,7 @@ wsServer.on('request', (request) => {
             connection.send(JSON.stringify(payload))
 
             // start broadcasting
-            broadcastGame();
+            // broadcastGame();
         }
 
         // when a user send a request to join game
@@ -100,27 +100,31 @@ wsServer.on('request', (request) => {
                     'gameId': gameId
                 };
                 clients[clientId].connection.send(JSON.stringify(payload));
+
+                broadcastGameUpdate(gameId);
             }
         }
 
-        if (request.method === 'update nickname'){
-            const clientId = request.clientId;
-            const nickname = request.nickname;
-            clients[clientId].nickname = nickname;
+        // if (request.method === 'update nickname'){
+        //     const clientId = request.clientId;
+        //     const nickname = request.nickname;
+        //     clients[clientId].nickname = nickname;
 
-            const payload = {
-                'method': 'update nickname',
-                'status': 'success',
-                'nickname': nickname
-            }
-            clients[clientId].connection.send(JSON.stringify(payload));
-        }
+        //     const payload = {
+        //         'method': 'update nickname',
+        //         'status': 'success',
+        //         'nickname': nickname
+        //     }
+        //     clients[clientId].connection.send(JSON.stringify(payload));
+        // }
         
         // when user request to click a card
         if (request.method === 'play'){
             const gameId = request.gameId;
             const cardId = request.cardId;
             games[gameId].cards[cardId].isClicked = !games[gameId].cards[cardId].isClicked;
+
+            broadcastGameUpdate(gameId);
         }
 
         // when user request to leave game
@@ -148,6 +152,8 @@ wsServer.on('request', (request) => {
             if (games[gameId].clients.length === 0){
                 delete games[gameId];
             }
+
+            broadcastGameUpdate(gameId);
         }
 
         // when user request to start game
@@ -155,6 +161,8 @@ wsServer.on('request', (request) => {
             const gameId = request.gameId;
             games[gameId].cards = initCards();
             games[gameId].status = 'started';
+
+            broadcastGameUpdate(gameId);
         }
 
         // when user request to close the game
@@ -181,6 +189,8 @@ wsServer.on('request', (request) => {
 
             // delete client connection
             delete clients[clientId];
+            
+            broadcastGameUpdate(gameId);
         }
     })
 
@@ -201,18 +211,32 @@ wsServer.on('request', (request) => {
 
 // ---------------------- heleper functions ----------------------
 
-function broadcastGame(){
-    for (const [gameId, game] of Object.entries(games)) {
-        const payload = {
-            'method': 'update',
-            'game': game
-        }
-        game.clients.forEach(c => {
-            clients[c.clientId].connection.send(JSON.stringify(payload));
-        })
+function broadcastGameUpdate(gameId){
+    const game = games[gameId];
+    if (game === undefined){
+        return;
     }
-    setTimeout(broadcastGame, 1000);
+    const payload = {
+        'method': 'update',
+        'game': game
+    }
+    game.clients.forEach(c => {
+        clients[c.clientId].connection.send(JSON.stringify(payload));
+    })
 }
+
+// function broadcastGame(){
+//     for (const [gameId, game] of Object.entries(games)) {
+//         const payload = {
+//             'method': 'update',
+//             'game': game
+//         }
+//         game.clients.forEach(c => {
+//             clients[c.clientId].connection.send(JSON.stringify(payload));
+//         })
+//     }
+//     setTimeout(broadcastGame, 1000);
+// }
 
 function broadcastWaitingGame(){
     let gameIds = []

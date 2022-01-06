@@ -140,6 +140,7 @@
     let clientId = null;
     let gameId = null;
     let showMap = false;
+    let cards = null;
 
     const divBeforeGame = document.getElementById('divBeforeGame');
     const divInGame = document.getElementById('divInGame');
@@ -187,6 +188,24 @@
     const btnShowHideMap = document.getElementById('btnShowHideMap');
     btnShowHideMap.addEventListener('click', e => {
         showMap = !showMap;
+
+        const colorMap = {
+            'red': 'lightcoral',
+            'blue': 'lightblue',
+            'yellow': 'lightyellow',
+            'grey': 'lightgrey',
+        }
+
+        const children = divCards.children;
+        for (let i = 0; i < children.length; i++) {
+            const btn = children[i];
+            const c = cards[i]
+            if (showMap) {
+                btn.style.background = c.isClicked ? c.color : colorMap[c.color];
+            } else {
+                btn.style.background = c.isClicked ? c.color : 'white';
+            }
+        }
     });
 
     const btnLeave = document.getElementById('btnLeave');
@@ -253,6 +272,8 @@
         }
 
         if (response.method === 'update'){
+            cards = response.game.cards;
+            // TODO: remove/add child performance issue? rander from state var 'cards' instead?
             // update players in the room
             while (divPlayers.firstChild){
                 divPlayers.removeChild(divPlayers.firstChild);
