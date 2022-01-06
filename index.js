@@ -21,7 +21,8 @@ const clients = {};
 // clients = {
 //     <clientID>: {
 //         'connection': <obj>,
-//         'nickname': <string>
+//         'nickname': <string>,
+//         'isAlive': true/false
 //     },
 //     <clientID>: {
 //         'connection': <obj>
@@ -192,6 +193,11 @@ wsServer.on('request', (request) => {
             
             broadcastGameUpdate(gameId);
         }
+
+        if (request.method === 'heartbeat') {
+            const clientId = request.clientId;
+            clients[clientId].isAlive = true;
+        }
     })
 
     // save connection to database and notify user
@@ -199,6 +205,7 @@ wsServer.on('request', (request) => {
     clients[clientId] = {
         'connection': connection,
         'nickname': clientId,
+        'isAlive': true,
     }
     const payload = {
         'method': 'connect',
@@ -258,6 +265,30 @@ function broadcastWaitingGame(){
 
     setTimeout(broadcastWaitingGame, 1000);
 }
+
+function heartBeat() {
+    // close and delete all dead connections
+    Object.entries(clients).forEach(([k, v]) => {
+        if (v.isAlive === false) {
+            v.connection.close();
+            delete clients[k];
+        } else {
+            v.isAlive = false;
+        }
+    })
+
+    // send heartbeat
+    const payload = {
+        'method': 'heartbeat',
+    }
+    Object.values(clients).forEach(c => {
+        c.connection.send(JSON.stringify(payload));
+    })
+
+    setTimeout(heartBeat, 10000)
+}
+
+heartBeat();
 
 function initCards(){
     const numCards = 25;
