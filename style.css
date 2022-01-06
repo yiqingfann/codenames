@@ -7,6 +7,7 @@
         display: grid;
         /* grid-template-columns: 20% 20% 20% 20% 20%; */
         grid-template-columns: 150px 150px 150px 150px 150px;
+        grid-template-rows: 150px 150px 150px 150px 150px;
         justify-content: center;
         font-size: large;
     }
@@ -15,8 +16,9 @@
 @media(max-width: 768px) {
     .cards-grid {
         display: grid;
-        grid-template-columns: 20% 20% 20% 20% 20%;
-        /* grid-template-columns: 150px 150px 150px 150px 150px; */
+        /* grid-template-columns: 20% 20% 20% 20% 20%; */
+        grid-template-columns: 75px 75px 75px 75px 75px;
+        grid-template-rows: 75px 75px 75px 75px 75px;
         justify-content: center;
         font-size: small;
     }
@@ -25,4 +27,6 @@
 
 
 
-
+.card {
+    width: 100%;
+}
