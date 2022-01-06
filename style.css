@@ -2,4 +2,25 @@
     .gameid-input {
         width: 50%;
     }
+
+    .cards-grid {
+        display: grid;
+        /* grid-template-columns: 20% 20% 20% 20% 20%; */
+        grid-template-columns: 150px 150px 150px 150px 150px;
+        justify-content: center;
+    }
 }
+
+@media(max-width: 768px) {
+    .cards-grid {
+        display: grid;
+        grid-template-columns: 20% 20% 20% 20% 20%;
+        /* grid-template-columns: 150px 150px 150px 150px 150px; */
+        justify-content: center;
+    }
+}
+
+
+
+
+

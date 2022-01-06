@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 
-    <title>Document</title>
+    <title>Codenames</title>
 </head>
 <body class="bg-dark">
     <!-- navbar -->
@@ -123,10 +123,11 @@
             </div>
 
             <h3 id='hPlayers' class="m-3">现有玩家</h2>
-            <div id='divPlayers' class="d-md-flex justify-content-center"></div>
+            <div id='divPlayers' class="d-flex justify-content-center"></div>
 
             <h3 id='hCards' class="m-3">所有卡片</h2>
-            <div id='divCards' class="justify-content-center" style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div>
+            <!-- <div id='divCards' class="justify-content-center" style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div> -->
+            <div id='divCards' class="cards-grid"></div>
 
         </section>
     </div>
@@ -228,8 +229,8 @@
     });
 
     // handle responses from server
-    let ws = new WebSocket('ws://127.0.0.1:8080')
-    // let ws = new WebSocket('ws://3.142.48.123:8080')
+    // let ws = new WebSocket('ws://127.0.0.1:8080')
+    let ws = new WebSocket('ws://3.142.48.123:8080')
     ws.onmessage = (message) => {
         const response = JSON.parse(message.data);
         
@@ -297,8 +298,10 @@
                 const btn = document.createElement('button')
                 btn.id = "card_" + i;
                 btn.tag = i;
-                btn.style.height = '150px';
-                btn.style.width = '150px';
+                // btn.style.height = '150px';
+                // btn.style.width = '150px';
+                btn.style.width = '100%';
+                // btn.style.height =  btn.style.width;
                 if (showMap) {
                     const colorMap = {
                         'red': 'lightcoral',
