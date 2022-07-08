@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 
     <title>Codenames</title>
 </head>
+
 <body class="bg-dark">
     <!-- navbar -->
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3">
@@ -27,7 +30,8 @@
                     <div>
                         <h1>来玩 <span class="text-warning">机密暗号</span></h1>
                         <p class="lead my-4">
-                            桌游中玩家分为红蓝两队，红队先开始，然后交替进行回合。在队伍的回合中，队长说线索，队员讨论猜词。若词汇颜色和队伍颜色相同，可以继续猜直到猜错。若猜错的词汇颜色为灰色，则该队失败。若不为灰色，则另一队开始回合。最先猜中所有词汇的队伍获胜（红队9个词，蓝队8个词）<a href="https://andyventure.com/boardgame-codenames/" target="_blank">点击查看详细规则</a>
+                            桌游中玩家分为红蓝两队，红队先开始，然后交替进行回合。在队伍的回合中，队长说线索，队员讨论猜词。若词汇颜色和队伍颜色相同，可以继续猜直到猜错。若猜错的词汇颜色为灰色，则该队失败。若不为灰色，则另一队开始回合。最先猜中所有词汇的队伍获胜（红队9个词，蓝队8个词）<a
+                                href="https://andyventure.com/boardgame-codenames/" target="_blank">点击查看详细规则</a>
                         </p>
                         <button id='btnCreate' class="btn-primary btn-lg">创建房间</button>
                     </div>
@@ -43,17 +47,8 @@
                     <h3 class="mb-3 mb-md-0">已有房间？</h3>
 
                     <div class="input-group gameid-input">
-                        <input 
-                            id='txtGameId'
-                            type="text"
-                            class="form-control"
-                            placeholder="房间号"
-                        />
-                        <button
-                            id='btnJoin'
-                            class="btn btn-dark btn-lg"
-                            type="button"
-                        >
+                        <input id='txtGameId' type="text" class="form-control" placeholder="房间号" />
+                        <button id='btnJoin' class="btn btn-dark btn-lg" type="button">
                             进入房间
                         </button>
                     </div>
@@ -116,18 +111,18 @@
         <section class="bg-dark text-light p-5 text-center">
             <h3 id="hGameId">房间号 </h2>
 
-            <div class="d-md-flex justify-content-center align-items-center">
-                <button id='btnStart' class="btn btn-primary m-1">开始游戏</button>
-                <button id='btnShowHideMap' class="btn btn-warning m-1">显示颜色</button>
-                <button id='btnLeave' class="btn btn-danger m-1">离开房间</button>
-            </div>
+                <div class="d-md-flex justify-content-center align-items-center">
+                    <button id='btnStart' class="btn btn-primary m-1">开始游戏</button>
+                    <button id='btnShowHideMap' class="btn btn-warning m-1">显示颜色</button>
+                    <button id='btnLeave' class="btn btn-danger m-1">离开房间</button>
+                </div>
 
-            <h3 id='hPlayers' class="m-3">现有玩家</h2>
-            <div id='divPlayers' class="d-flex justify-content-center"></div>
+                <h3 id='hPlayers' class="m-3">现有玩家</h2>
+                    <div id='divPlayers' class="d-flex justify-content-center"></div>
 
-            <h3 id='hCards' class="m-3">所有卡片</h2>
-            <!-- <div id='divCards' class="justify-content-center" style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div> -->
-            <div id='divCards' class="cards-grid"></div>
+                    <h3 id='hCards' class="m-3">所有卡片</h2>
+                        <!-- <div id='divCards' class="justify-content-center" style='display: grid; grid-template-columns: 150px 150px 150px 150px 150px;'></div> -->
+                        <div id='divCards' class="cards-grid"></div>
 
         </section>
     </div>
@@ -153,7 +148,7 @@
     const pNumAvailableGames = document.getElementById('pNumAvailableGames');
     const divOngoingGames = document.getElementById('divOngoingGames');
 
-    
+
 
     // make requests to server
     const btnCreate = document.getElementById('btnCreate');
@@ -230,11 +225,11 @@
 
     // handle responses from server
     // let ws = new WebSocket('ws://127.0.0.1:8080')
-    let ws = new WebSocket('ws://3.142.48.123:8080')
+    let ws = new WebSocket('ws://3.134.244.252:8080')
     ws.onmessage = (message) => {
         const response = JSON.parse(message.data);
-        
-        if (response.method === 'connect'){
+
+        if (response.method === 'connect') {
             clientId = response.clientId
         };
 
@@ -246,12 +241,12 @@
             ws.send(JSON.stringify(payload));
         };
 
-        if (response.method === 'create'){
+        if (response.method === 'create') {
             txtGameId.value = response.gameId
             btnJoin.click();
         };
 
-        if (response.method === 'join'){
+        if (response.method === 'join') {
             txtGameId.value = response.gameId;
             gameId = response.gameId;
             hGameId.innerText = "房间号 " + gameId;
@@ -260,10 +255,10 @@
             divInGame.style.display = "block";
         };
 
-        if (response.method === 'waiting'){
+        if (response.method === 'waiting') {
             pNumOnlineClients.innerText = response.numOnlineClients;
             pNumAvailableGames.innerText = response.gameIds.length;
-            while (divOngoingGames.firstChild){
+            while (divOngoingGames.firstChild) {
                 divOngoingGames.removeChild(divOngoingGames.firstChild);
             }
             const gameIds = response.gameIds
@@ -280,11 +275,11 @@
             })
         }
 
-        if (response.method === 'update'){
+        if (response.method === 'update') {
             cards = response.game.cards;
             // TODO: remove/add child performance issue? rander from state var 'cards' instead?
             // update players in the room
-            while (divPlayers.firstChild){
+            while (divPlayers.firstChild) {
                 divPlayers.removeChild(divPlayers.firstChild);
             }
             response.game.clients.forEach(c => {
@@ -299,10 +294,10 @@
             })
 
             // update cards
-            while (divCards.firstChild){
+            while (divCards.firstChild) {
                 divCards.removeChild(divCards.firstChild);
             }
-            response.game.cards.forEach((c,i) => {
+            response.game.cards.forEach((c, i) => {
                 const btn = document.createElement('button')
                 btn.id = "card_" + i;
                 btn.tag = i;
@@ -336,14 +331,14 @@
             })
         }
 
-        if (response.method === 'leave'){
-            if (response.status === 'success'){
+        if (response.method === 'leave') {
+            if (response.status === 'success') {
                 gameId = null;
                 showMap = false;
-                while (divPlayers.firstChild){
+                while (divPlayers.firstChild) {
                     divPlayers.removeChild(divPlayers.firstChild);
                 }
-                while (divCards.firstChild){
+                while (divCards.firstChild) {
                     divCards.removeChild(divCards.firstChild);
                 }
                 hGameId.innerText = "房间号 " + gameId;
@@ -352,7 +347,8 @@
             }
         }
     }
-    
+
 
 </script>
+
 </html>
